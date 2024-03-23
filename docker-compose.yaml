@@ -1,0 +1,77 @@
+version: '1.0'
+networks:
+  bundlecore-net: {
+
+  }
+
+services:
+  db:
+    networks:
+      - bundlecore-net
+    # restart: always
+    image: postgres:15
+    container_name: bundlecore-db
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./var/run/postgresql/:/var/run/postgresql/
+    environment:
+      # - POSTGRES_HOST=localhost
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bundleCore
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  # frontend:
+  #   container_name: bundlecore-client
+  #   image: bundle-core-frontend
+  #   networks:
+  #     - bundlecore-net
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - backend
+
+  backend:
+    networks:
+      - bundlecore-net
+    # restart: always
+    image: bundlecore-django-api
+    container_name: bundlecore-backend-django
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    # command: python /app/backend/manage.py runserver 0.0.0.0:8000
+    # command: sh -c "python3 ./server/manage.py migrate --noinput && python3 ./server/manage.py collectstatic --noinput && python ./server/manage.py runserver 0.0.0.0:8000"
+    command: sleep 5 && python ./server/manage.py makemigrations && python ./server/manage.py migrate && python3 server/manage.py runserver 0.0.0.0:8000
+    # environment:
+    #   - SECRET_KEY='#*bgbq3lo%bvyt!w60cc0y58ij4ih^h2^x*-9e&q^1+it&y-4p'
+    #   - DEBUG=True
+    #   - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    #   - DB_NAME=bundle_core
+    #   - DB_USER=postgres
+    #   - DB_PASSWORD=postgres
+    #   - DB_HOST=db
+    #   - DB_PORT=5432
+
+    volumes:
+      - .:/app/backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - db
+
+
+volumes:
+  data:

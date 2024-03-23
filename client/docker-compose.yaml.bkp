@@ -1,0 +1,59 @@
+version: '1.0'
+networks:
+  bundlecore-net: {
+
+  }
+
+volumes:
+  pgsql_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PGSQL_DATA_PATH}
+
+services:
+  bundlecore-client-srv:
+    networks:
+    - bundlecore-net
+    build: ./
+    container_name: bundlecore-client
+    restart: always
+    ports:
+    - 3000:3000
+
+
+  bundlecore-db-srv:
+    networks:
+    - bundlecore-net
+    restart: always
+    image: postgres:15
+    container_name: bundlecore-db
+    ports:
+    - 5432:5432
+    volumes:
+    - pgsql_data:/var/lib/postgresql/data
+    environment:
+    - POSTGRES_HOST=localhost
+    - POSTGRES_USER
+    - POSTGRES_PASSWORD
+    - POSTGRES_DB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  bundlecore-backend-srv:
+    networks:
+    - bundlecore-net
+    restart: always
+    image: bundlecore-django-api
+    container_name: bundlecore-backend-django
+    build:
+      context: ../server/bundleCore/
+      dockerfile: Dockerfile
+    volumes:
+      - ../server/bundleCore/app  # Replace with the actual path
+    ports:
+    - "8000:8000"
