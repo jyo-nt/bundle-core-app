@@ -26,19 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = os.getenv("SECRET_KEY")
 SECRET_KEY = '#*bgbq3lo%bvyt!w60cc0y58ij4ih^h2^x*-9e&q^1+it&y-4p'
-print("aaa")
-print(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
-print(DEBUG)
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(",")
+ALLOWED_METHODS = os.getenv("ALLOWED_METHODS", "get").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    "bundleCore",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "bundleCore"
 ]
 
 MIDDLEWARE = [
@@ -80,6 +78,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "main.wsgi.application"
 
+# Django REST Framework settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ]
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/databases/#postgresql-notes
@@ -94,18 +99,6 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT"),
     }
 }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": 'bundleCore',
-#         "USER": 'postgres',
-#         "PASSWORD": 'postgres',
-#         "HOST": 'db',
-#         "PORT": 5432,
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -129,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
 TIME_ZONE = "UTC"
 

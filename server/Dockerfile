@@ -2,7 +2,6 @@
 
 FROM python:3.9-slim as base
 
-
 WORKDIR /app/backend
 
 ARG UID=10001
@@ -27,13 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 USER appuser
 
 # Copy the source code into the container.
-COPY . .
+COPY . /app/backend/
 
 # # Expose the port that the application listens on.
-# EXPOSE 8000
-
-# Run the application.
-# CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
-
-# CMD gunicorn 'server.main.wsgi' --bind=0.0.0.0:8000
-# CMD ["gunicorn", "-b", "0.0.0.0:8000", "server.main.wsgi:application"]
+EXPOSE 8000
