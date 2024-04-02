@@ -1,29 +1,25 @@
 # bundle-core-app
+
 Application to search, retrieve and download bioinformatics tools packages
 
-## Run manually:
+## Migrate dbs:
 
-### Client:
-`cd client`
+`docker-compose run backend python manage.py migrate`
 
-`npm install`
+### Load data into db
 
-`npm start`
+`docker-compose run backend python manage.py load_data metadata data/tools-metadata.csv`
 
-Access it here http://localhost:3000/
+`docker-compose run backend python manage.py load_data versions data/tools-versions.csv`
+
+### Now run the container
+
+`docker-compose up`
+
+Client: http://localhost:3000/
 
 ### Django
-`cd server`
 
-`python manage.py makemigrations`
+Backend: http://localhost:8000/
 
-`python manage.py migrate`
-
-`python manage.py runserver`
-
-
-Access it here http://localhost:8000/
-
-Remember to load Postgres with data from below sheets - metadata and versions
-https://docs.google.com/spreadsheets/d/18W_ppfsxnTURDJXnGf9yw-1r3h1AkO6U_DGpTzNQryQ/edit?usp=gmail_thread
-
+Data: Inside `data` directory
