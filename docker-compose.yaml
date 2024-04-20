@@ -6,7 +6,7 @@ services:
   db:
     networks:
       - bundlecore-net
-    # restart: always
+    restart: always
     image: postgres:latest
     container_name: bundlecore-db
     volumes:
@@ -24,6 +24,8 @@ services:
   frontend:
     container_name: bundlecore-client
     image: bundle-core-frontend
+    volumes:
+      - client:/app/frontend/
     networks:
       - bundlecore-net
     build:
@@ -38,8 +40,10 @@ services:
   backend:
     networks:
       - bundlecore-net
-    # restart: always
+    restart: always
     image: bundlecore-django-api
+    volumes:
+      - server:/app/backend
     container_name: bundlecore-backend-django
     build:
       context: ./server
@@ -54,3 +58,5 @@ services:
 
 volumes:
   data:
+  server:
+  client:

@@ -1,5 +1,11 @@
-import React, { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,7 +14,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import Link from '@mui/material/Link';
+import Link from "@mui/material/Link";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
@@ -23,14 +29,16 @@ const Search = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
-  const q = query.get('q');
-  
+  const q = query.get("q");
+
   const search = useCallback(async (query: string) => {
     if (!query) {
       return;
     }
 
-    const url = `http://localhost:8000/package/search?q=${encodeURIComponent(query)}`;
+    const url = `http://localhost:8000/package/search?q=${encodeURIComponent(
+      query
+    )}`;
 
     const response = await fetch(url);
     if (response.status !== 200) {
@@ -38,10 +46,10 @@ const Search = () => {
     }
     const data = await response.json();
     if (!data) {
-      setError('No results found!')
+      setError("No results found!");
     }
     if (!data.length) {
-      setError('No results found!')
+      setError("No results found!");
       return;
     }
     setPackages(data);
@@ -51,16 +59,16 @@ const Search = () => {
     if (!q) {
       return;
     }
-    setPackages([])
-    setInputText(q)
+    setPackages([]);
+    setInputText(q);
     search(q);
   }, [q, search]); // Execute the effect when the id changes
 
   const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const query = event.currentTarget.value;
     setInputText(query);
-    setError('')
-    setPackages(null)
+    setError("");
+    setPackages(null);
   };
 
   const onSearchSubmit = (event: FormEvent) => {
@@ -70,11 +78,10 @@ const Search = () => {
     search(inputText);
   };
 
-
   return (
     <Grid container spacing={12}>
-      <Grid item xs={12} textAlign={'center'}  className="search_results">
-          <h1> Bundle Core </h1>
+      <Grid item xs={12} textAlign={"center"} className="search_results">
+        <h1> Bundle Core </h1>
       </Grid>
       <Grid item xs={12} className="search_results">
         <form onSubmit={onSearchSubmit}>
@@ -87,7 +94,7 @@ const Search = () => {
             </IconButton>
             <Divider orientation="vertical" />
             <InputBase
-              sx={{ lg: 1, flex: 1, pr: '20px', fontSize: '20px' }}
+              sx={{ lg: 1, flex: 1, pr: "20px", fontSize: "20px" }}
               placeholder="Search for packages"
               inputProps={{ "aria-label": "search google maps" }}
               value={inputText}
@@ -100,27 +107,26 @@ const Search = () => {
       </Grid>
 
       <Grid item xs={12} className="search_results">
-        { packages?.length ?
-            <PackageList packages={packages}/>
-          : null
-        }
+        {packages?.length ? <PackageList packages={packages} /> : null}
         <div className="error">{error}</div>
       </Grid>
     </Grid>
   );
 };
 
-const PackageList = (packages: {packages: Package[]}) => {
+const PackageList = (packages: { packages: Package[] }) => {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} stickyHeader>
-        <TableHead sx = {{
-              "& th": {
-                fontWeight: 'bold',
-                fontSize: '14px',
-                backgroundColor: "#bbeefd"
-              }
-            }}>
+        <TableHead
+          sx={{
+            "& th": {
+              fontWeight: "bold",
+              fontSize: "14px",
+              backgroundColor: "#bbeefd",
+            },
+          }}
+        >
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Category</TableCell>
@@ -130,30 +136,33 @@ const PackageList = (packages: {packages: Package[]}) => {
         </TableHead>
         <TableBody>
           {packages.packages.map((_package) => (
-            <PackageItem key={_package.id} package={_package}/>
+            <PackageItem key={_package.id} package={_package} />
           ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+};
 
 type PackageItemProps = {
-  package: Package
-}
+  package: Package;
+};
 const PackageItem = (props: PackageItemProps) => {
-  const {package: _package} = props;
+  const { package: _package } = props;
   const navigate = useNavigate();
 
   const packageItemClickHandler = (id: number) => {
     navigate(`/package/${id}`);
-  }
+  };
 
   return (
     <TableRow
       key={_package.id}
-      sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
-      onClick={()=> packageItemClickHandler(_package.id)}
+      sx={{
+        "&:last-child td, &:last-child th": { border: 0 },
+        cursor: "pointer",
+      }}
+      onClick={() => packageItemClickHandler(_package.id)}
       hover={true}
     >
       <TableCell component="th" scope="row">
@@ -165,19 +174,23 @@ const PackageItem = (props: PackageItemProps) => {
         <LicenseLink license={_package.license} />
       </TableCell>
     </TableRow>
+  );
+};
 
-  )
-}
-
-export const LicenseLink = (props: Pick<Package, 'license'>) => {
-  if(props.license.url)
+export const LicenseLink = (props: Pick<Package, "license">) => {
+  if (props.license.url)
     return (
-      <Link aria-label="license" href={props.license.url} target="_blank" rel="noreferrer">
+      <Link
+        aria-label="license"
+        href={props.license.url}
+        target="_blank"
+        rel="noreferrer"
+      >
         {props.license.label}
       </Link>
-    )
-    else {
-      return <span>{props.license.label}</span>;
-    }
-}
+    );
+  else {
+    return <span>{props.license.label}</span>;
+  }
+};
 export default Search;

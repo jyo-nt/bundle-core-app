@@ -13,10 +13,11 @@ class Package(models.Model):
         db_table = 'package_meta'
 
     def __str__(self):
-        return f"{self.id} {self.name}"
+        # return f"{self.id} {self.name}"
+        return f"{self.name}"
 
 class PackageVersion(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.ForeignKey(Package, on_delete=models.CASCADE)
     version = models.CharField(max_length=255)
     download_url = models.URLField()
 
@@ -24,4 +25,4 @@ class PackageVersion(models.Model):
         db_table = 'package_version'
 
     def __str__(self):
-        return f"{self.name.name} - {self.version}"
+        return f"{self.name} - {self.version}"  # Adjusted to directly access the name attribute

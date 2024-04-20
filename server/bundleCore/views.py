@@ -14,22 +14,18 @@ class PackageSearch(generics.ListAPIView):
         packages = Package.objects.filter(Q(name__icontains=q))
     else:
         packages = Package.objects.all()
-
     return packages
   
-  def get_package_info(request, package_id):
-
-    # Retrieve the Package instance
-    package = get_object_or_404(Package, id=package_id)
-
-    # Retrieve related package versions for the package name
-    versions = PackageVersion.objects.filter(name=package.name)
-
-    package_serializer = PackageSerializer(package)
-
-    package_info = {
-        **package_serializer.data,
-        'versions': [{'version': version.version, 'download_url': version.download_url} for version in versions]
-    }
-
-    return JsonResponse(package_info)
+class PackageDetail(generics.RetrieveAPIView):
+    queryset = Package.objects.all()
+    serializer_class = PackageSerializer
+    print ("======")
+    def get(self, request, package_id):
+        package = get_object_or_404(Package, id=package_id)
+        versions = PackageVersion.objects.filter(name=package)
+        package_serializer = PackageSerializer(package)
+        package_info = {
+            **package_serializer.data,
+            'versions': [{'version': version.version, 'download_url': version.download_url} for version in versions]
+        }
+        return JsonResponse(package_info)
